@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 
-function page() {
+function Dashboardpage() {
   return (
     <div>
       <header className="flex ">
@@ -30,4 +30,4 @@ function page() {
   );
 }
 
-export default page;
+export default Dashboardpage;
