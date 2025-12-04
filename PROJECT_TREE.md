@@ -1,0 +1,93 @@
+# Project Tree
+
+```
+components.json
+eslint.config.mjs
+next.config.ts
+package-lock.json
+package.json
+postcss.config.mjs
+README.md
+tsconfig.json
+.gitignore
+public/
+  file.svg
+  globe.svg
+  next.svg
+  vercel.svg
+  window.svg
+config/
+  site.ts
+hooks/
+  use-event-realtime.ts
+  use-toast.ts
+lib/
+  api/
+    event.ts
+  auth.ts
+  db.ts
+  realtime.ts
+  supabase/
+    client.ts
+    middleware.ts
+    server.ts
+  utils.ts
+  validations.ts
+components/
+  layout/
+    footer.tsx
+    header.tsx
+  ui/
+    checkbox.tsx
+    field.tsx
+    label.tsx
+    separator.tsx
+    skeleton.tsx
+    sonner.tsx
+    spinner.tsx
+app/
+  favicon.ico
+  globals.css
+  layout.tsx
+  page.tsx
+  admin/
+    layout.tsx
+    page.tsx
+  (landing)/
+    page.tsx
+    about-us/
+      page.tsx
+  (event)/
+    [code]/
+      page.tsx
+    join/
+      page.tsx
+  (dashboard)/
+    dashboard/
+      layout.tsx
+      page.tsx
+    events/
+      new/
+        page.tsx
+      [eventId]/
+        page.tsx
+        setting/
+          page.tsx
+  api/
+    events/
+      route.ts
+    join/
+      route.ts
+    webhook/
+      route.ts
+  (auth)/
+    callback/
+      route.ts
+    login/
+      layout.tsx
+      page.tsx
+      sign-in-form.tsx
+    register/
+      page.tsx
+      sign-up-form.tsx
+```
