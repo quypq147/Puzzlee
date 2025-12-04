@@ -60,7 +60,7 @@ export function Header() {
             Đăng nhập
           </Link>
           <Link
-            href="/signup"
+            href="/register"
             className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             Đăng ký
