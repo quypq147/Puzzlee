@@ -1,15 +1,52 @@
+// app/api/events/route.ts
 import { NextResponse } from "next/server";
-import { getEventById } from "@/lib/api/event";
+import { createClient } from "@/lib/supabase/server";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const event = await getEventById(params.id);
+function generateCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
 
-  if (!event) {
-    return NextResponse.json({ error: "Event not found" }, { status: 404 });
+export async function POST(req: Request) {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json(event);
+  const body = await req.json();
+  const { title, description } = body;
+
+  const code = generateCode();
+
+  const { data, error } = await supabase
+    .from("events")
+    .insert({
+      title,
+      description,
+      code,
+      created_by: user.id,
+    })
+    .select("id, code, title")
+    .single();
+
+  if (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Không thể tạo sự kiện" },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json(data);
 }
+

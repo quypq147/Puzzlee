@@ -1,78 +1,71 @@
 # Project Tree
 
-```
+```text
+.env.example
+.env.local
+.gitignore
 components.json
 eslint.config.mjs
+next-env.d.ts
 next.config.ts
-package-lock.json
 package.json
 postcss.config.mjs
+PROJECT_TREE.md
 README.md
 tsconfig.json
-.gitignore
 public/
   file.svg
   globe.svg
   next.svg
   vercel.svg
   window.svg
-config/
-  site.ts
-hooks/
-  use-event-realtime.ts
-  use-toast.ts
-lib/
-  api/
-    event.ts
-  auth.ts
-  db.ts
-  realtime.ts
-  supabase/
-    client.ts
-    middleware.ts
-    server.ts
-  utils.ts
-  validations.ts
-components/
-  layout/
-    footer.tsx
-    header.tsx
-  ui/
-    checkbox.tsx
-    field.tsx
-    label.tsx
-    separator.tsx
-    skeleton.tsx
-    sonner.tsx
-    spinner.tsx
 app/
   favicon.ico
   globals.css
   layout.tsx
   page.tsx
-  admin/
-    layout.tsx
-    page.tsx
-  (landing)/
-    page.tsx
-    about-us/
+  (auth)/
+    callback/
+    confirm/
+      route.ts
+    error/
       page.tsx
-  (event)/
-    [code]/
+    forgot-password/
       page.tsx
-    join/
+    login/
+      page.tsx
+    register/
+      page.tsx
+    sign-out/
+      route.ts
+    sign-up-success/
+      page.tsx
+    update-password/
       page.tsx
   (dashboard)/
     dashboard/
       layout.tsx
       page.tsx
     events/
-      new/
-        page.tsx
       [eventId]/
         page.tsx
         setting/
           page.tsx
+      new/
+        page.tsx
+  (event)/
+    [code]/
+      page.tsx
+      room.tsx
+    join/
+      page.tsx
+  (landing)/
+    page.tsx
+    about-us/
+      page.tsx
+  admin/
+    layout.tsx
+    page.tsx
   api/
     events/
       route.ts
@@ -80,14 +73,43 @@ app/
       route.ts
     webhook/
       route.ts
-  (auth)/
-    callback/
-      route.ts
-    login/
-      layout.tsx
-      page.tsx
-      sign-in-form.tsx
-    register/
-      page.tsx
-      sign-up-form.tsx
+  protected/
+    page.tsx
+components/
+  forgot-password-form.tsx
+  login-form.tsx
+  logout-button.tsx
+  sign-up-form.tsx
+  update-password-form.tsx
+  layout/
+    footer.tsx
+    header.tsx
+  ui/
+    button.tsx
+    card.tsx
+    checkbox.tsx
+    field.tsx
+    input.tsx
+    label.tsx
+    separator.tsx
+    skeleton.tsx
+    sonner.tsx
+    spinner.tsx
+hooks/
+  use-auth.tsx
+  use-event-realtime.ts
+  use-toast.ts
+lib/
+  auth.ts
+  db.ts
+  realtime.ts
+  utils.ts
+  validations.ts
+  api/
+    event.ts
+    user.ts
+  supabase/
+    client.ts
+    middleware.ts
+    server.ts
 ```
