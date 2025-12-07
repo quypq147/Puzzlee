@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils"; // dùng hàm cn bạn đã có
+import { useAuth } from "@/hooks/use-auth";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { LogoutButton } from "@/components/logout-button";
 
 const navItems = [
   { label: "Trang chủ", href: "/" },
@@ -33,6 +36,12 @@ function NavbarItem({ href, label }: NavbarItemProps) {
 }
 
 export function Header() {
+  const { user, profile, loading } = useAuth();
+  const firstLetter =
+    profile?.full_name?.charAt(0)?.toUpperCase() ||
+    user?.email?.charAt(0)?.toUpperCase() ||
+    "?";
+
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center px-4">
@@ -53,18 +62,45 @@ export function Header() {
 
         {/* Actions */}
         <div className="ml-auto flex items-center gap-3">
-          <Link
-            href="/login"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            Đăng nhập
-          </Link>
-          <Link
-            href="/register"
-            className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            Đăng ký
-          </Link>
+          {loading ? null : user ? (
+            <>
+              <Link
+                href="/(dashboard)/dashboard"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Dashboard
+              </Link>
+
+              <div className="flex items-center gap-2">
+                <Avatar className="h-8 w-8">
+                  {profile?.avatar_url ? (
+                    <AvatarImage src={profile.avatar_url} alt={profile.full_name ?? ""} />
+                  ) : null}
+                  <AvatarFallback>{firstLetter}</AvatarFallback>
+                </Avatar>
+                <span className="hidden text-sm md:inline-block">
+                  {profile?.full_name || user.email}
+                </span>
+              </div>
+
+              <LogoutButton />
+            </>
+          ) : (
+            <>
+              <Link
+                href="/(auth)/login"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Đăng nhập
+              </Link>
+              <Link
+                href="/(auth)/register"
+                className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Đăng ký
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

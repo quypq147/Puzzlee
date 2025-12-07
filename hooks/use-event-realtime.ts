@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { subscribeToEventQuestions } from "@/lib/realtime";
 
 export function useEventQuestions(eventId: string) {
@@ -7,7 +8,16 @@ export function useEventQuestions(eventId: string) {
   useEffect(() => {
     if (!eventId) return;
 
-    // TODO: fetch initial questions bằng supabase.from('questions')...
+    const supabase = createClient();
+
+    supabase
+      .from("questions")
+      .select("*")
+      .eq("event_id", eventId)
+      .order("created_at", { ascending: false })
+      .then((res) => {
+        setQuestions(res.data ?? []);
+      });
 
     const unsubscribe = subscribeToEventQuestions(eventId, (q) => {
       setQuestions((prev) => [q, ...prev]);

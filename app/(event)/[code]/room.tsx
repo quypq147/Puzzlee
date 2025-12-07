@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 // nếu anh có Toast: import { useToast } from "@/hooks/use-toast";
 
 export function EventRoom({ event }: { event: any }) {
-  const { questions, loading } = useEventQuestions(event.id);
+  const { questions } = useEventQuestions(event.id);
+  const loading = false;
   const [content, setContent] = useState("");
   const [sending, setSending] = useState(false);
   const supabase = createClient();
@@ -77,3 +78,4 @@ export function EventRoom({ event }: { event: any }) {
     </div>
   );
 }
+

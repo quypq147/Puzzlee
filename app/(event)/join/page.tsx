@@ -14,7 +14,7 @@ export default function JoinEventPage() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!code.trim()) return;
-    router.push(`/event/${code.trim()}`);
+    router.push(`/${code.trim()}`);
   };
 
   return (
@@ -39,3 +39,4 @@ export default function JoinEventPage() {
     </div>
   );
 }
+
