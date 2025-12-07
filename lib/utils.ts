@@ -1,3 +1,27 @@
-export function cn(...inputs: Array<string | false | null | undefined>) {
-  return inputs.filter(Boolean).join(" ");
+type ClassValue =
+  | string
+  | number
+  | null
+  | false
+  | undefined
+  | Record<string, boolean>
+  | ClassValue[]
+
+export function cn(...inputs: ClassValue[]): string {
+  const classes: string[] = []
+
+  for (const input of inputs) {
+    if (!input) continue
+    if (typeof input === 'string' || typeof input === 'number') {
+      classes.push(String(input))
+    } else if (Array.isArray(input)) {
+      classes.push(cn(...input))
+    } else {
+      for (const [key, value] of Object.entries(input)) {
+        if (value) classes.push(key)
+      }
+    }
+  }
+
+  return classes.join(' ')
 }

@@ -1,9 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { cookies } from "next/headers";
 
 
 export async function getEventById(id: string) {
-  const supabase = createClient(cookies());
+  const supabase = createClient();
   const { data, error } = await supabase
     .from("events")
     .select("*")

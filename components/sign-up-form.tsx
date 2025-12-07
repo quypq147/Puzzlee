@@ -20,6 +20,8 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [repeatPassword, setRepeatPassword] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
@@ -42,6 +44,11 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/protected`,
+          data: {
+            full_name: fullName || null,
+            avatar_url: avatarUrl || null,
+            role: 'user',
+          },
         },
       })
       if (error) throw error
@@ -64,6 +71,16 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
+                <Label htmlFor="full-name">Họ và tên</Label>
+                <Input
+                  id="full-name"
+                  type="text"
+                  placeholder="Nguyễn Văn A"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
@@ -72,6 +89,16 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="avatar-url">Avatar URL (tuỳ chọn)</Label>
+                <Input
+                  id="avatar-url"
+                  type="url"
+                  placeholder="https://..."
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
                 />
               </div>
               <div className="grid gap-2">

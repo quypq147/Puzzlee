@@ -78,3 +78,4 @@ export function EventRoom({ event }: { event: any }) {
     </div>
   );
 }
+

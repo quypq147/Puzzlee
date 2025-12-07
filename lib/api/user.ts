@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { cookies } from "next/headers";
 
 export async function getUserById(id: string) {
-    const supabase = createClient(cookies());
+    const supabase = createClient();
     const { data, error } = await supabase
         .from("users")
         .select("*")
@@ -14,7 +13,7 @@ export async function getUserById(id: string) {
     return data;
 }
 export async function getUserByEmail(email: string) {
-    const supabase = createClient(cookies());
+    const supabase = createClient();
     const { data, error } = await supabase
         .from("users")
         .select("*")
