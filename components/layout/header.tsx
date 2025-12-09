@@ -2,15 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils"; // dùng hàm cn bạn đã có
+import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { LogoutButton } from "@/components/logout-button";
+import { Button } from "@/components/ui/button";
+import { ProfileDropdown } from "@/components/profile-dropdown";
 
 const navItems = [
-  { label: "Trang chủ", href: "/" },
-  { label: "Tính năng", href: "#features" },
-  { label: "Hướng dẫn", href: "#how-it-works" },
+  { label: "Product", href: "#product" },
+  { label: "Solutions", href: "#solutions" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Resources", href: "#resources" },
+  { label: "Enterprise", href: "#enterprise" },
 ];
 
 type NavbarItemProps = {
@@ -19,16 +22,10 @@ type NavbarItemProps = {
 };
 
 function NavbarItem({ href, label }: NavbarItemProps) {
-  const pathname = usePathname();
-  const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
-
   return (
     <Link
       href={href}
-      className={cn(
-        "text-sm font-medium text-muted-foreground hover:text-foreground transition-colors",
-        isActive && "text-foreground"
-      )}
+      className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
     >
       {label}
     </Link>
@@ -36,68 +33,38 @@ function NavbarItem({ href, label }: NavbarItemProps) {
 }
 
 export function Header() {
-  const { user, profile, loading } = useAuth();
-  const firstLetter =
-    profile?.full_name?.charAt(0)?.toUpperCase() ||
-    user?.email?.charAt(0)?.toUpperCase() ||
-    "?";
+  const { user, loading } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center px-4">
+    <header className="sticky top-0 z-40 border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div className="mx-auto flex h-16 max-w-7xl items-center px-4 md:px-6">
         {/* Logo */}
-        <Link href="/" className="text-lg font-semibold tracking-tight">
-          Puzzlee
-          <span className="ml-1 text-xs font-normal text-muted-foreground">
-            Q&A
-          </span>
+        <Link href="/" className="mr-8 flex items-center gap-2 shrink-0">
+          <span className="text-xl font-bold text-primary">slido</span>
         </Link>
 
         {/* Nav */}
-        <nav className="ml-10 hidden space-x-6 md:flex">
+        <nav className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
             <NavbarItem key={item.href} {...item} />
           ))}
         </nav>
 
         {/* Actions */}
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex items-center gap-4">
           {loading ? null : user ? (
-            <>
-              <Link
-                href="/(dashboard)/dashboard"
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                Dashboard
-              </Link>
-
-              <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
-                  {profile?.avatar_url ? (
-                    <AvatarImage src={profile.avatar_url} alt={profile.full_name ?? ""} />
-                  ) : null}
-                  <AvatarFallback>{firstLetter}</AvatarFallback>
-                </Avatar>
-                <span className="hidden text-sm md:inline-block">
-                  {profile?.full_name || user.email}
-                </span>
-              </div>
-
-              <LogoutButton />
-            </>
+            <ProfileDropdown />
           ) : (
             <>
-              <Link
-                href="/(auth)/login"
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                Đăng nhập
+              <Link href="/login">
+                <Button variant="ghost" size="sm" className="text-sm">
+                  Log In
+                </Button>
               </Link>
-              <Link
-                href="/(auth)/register"
-                className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              >
-                Đăng ký
+              <Link href="/register">
+                <Button size="sm" className="bg-primary hover:bg-primary/90">
+                  Sign Up
+                </Button>
               </Link>
             </>
           )}

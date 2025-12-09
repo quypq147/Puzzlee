@@ -1,7 +1,9 @@
 import type React from "react"
-import { LogoutButton } from "@/components/logout-button"
 import Link from "next/link"
+import { SlidoSidebar } from "@/components/slido-sidebar"
+import { ProfileDropdown } from "@/components/profile-dropdown"
 import { Button } from "@/components/ui/button"
+import { Menu } from "lucide-react"
 
 export default function DashboardLayout({
   children,
@@ -10,33 +12,32 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-        <div className="container flex items-center justify-between h-16">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="font-bold text-xl">Puzzlee</span>
+      <header className="border-b border-border sticky top-0 z-30 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+        <div className="flex items-center justify-between h-16 px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <button className="md:hidden">
+              <Menu className="h-5 w-5" />
+            </button>
+            <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
+              <span className="font-bold text-lg text-primary">slido</span>
             </Link>
-            <nav className="hidden md:flex items-center gap-4 text-sm">
-              <Link href="/dashboard" className="text-muted-foreground hover:text-foreground">
-                Tổng quan
-              </Link>
-              <Link href="/events" className="text-muted-foreground hover:text-foreground">
-                Sự kiện
-              </Link>
-              <Link href="/dashboard/profile" className="text-muted-foreground hover:text-foreground">
-                Hồ sơ
-              </Link>
-            </nav>
+            <div className="hidden md:flex items-center gap-2 text-sm text-foreground/60">
+              <span>669 - Phan Ngoc's organization</span>
+              <span className="text-xs bg-background px-2 py-1 rounded">Owner</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Link href="/events/new">
-              <Button size="sm">Tạo sự kiện</Button>
-            </Link>
-            <LogoutButton />
+          <div className="flex items-center gap-4">
+            <button className="text-sm text-foreground/60 hover:text-foreground">
+              What's new
+            </button>
+            <ProfileDropdown />
           </div>
         </div>
       </header>
-      <main className="container py-6">{children}</main>
+      <div className="flex">
+        <SlidoSidebar />
+        <main className="flex-1 md:ml-56 py-6 px-4 md:px-8 max-w-7xl mx-auto w-full">{children}</main>
+      </div>
     </div>
   )
 }

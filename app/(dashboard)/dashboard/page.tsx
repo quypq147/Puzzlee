@@ -4,29 +4,15 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Loader2 } from "lucide-react"
-import { EventCard } from "@/components/event-card"
+import { Loader2, PlusCircle, Play } from "lucide-react"
 import { CreateEventDialog } from "@/components/create-event-dialog"
-import { LogoutButton } from "@/components/logout-button"
-
-function Stat({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="flex flex-col">
-      <span className="text-sm text-muted-foreground">{label}</span>
-      <span className="text-xl font-semibold">{value}</span>
-    </div>
-  )
-}
 
 function DashboardPage() {
   const [events, setEvents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
     loadEvents()
-    loadUser()
   }, [])
 
   const loadEvents = async () => {
@@ -37,162 +23,106 @@ function DashboardPage() {
         setEvents(data)
       }
     } catch (error) {
-      console.error("Không thể tải các sự kiện:", error)
+      console.error("Error loading events:", error)
     } finally {
       setLoading(false)
     }
   }
 
-  const loadUser = async () => {
-    try {
-      const res = await fetch("/api/auth/user")
-      if (res.ok) {
-        const data = await res.json()
-        setUser(data)
-      }
-    } catch (error) {
-      console.error("Không thể tải người dùng:", error)
-    }
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (events.length === 0) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold">Create a slido</h1>
+          <p className="text-foreground/70 mt-2">Get started with interactive meetings</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
+          {/* Create Card */}
+          <Card className="border-2 border-dashed hover:border-primary/50 transition-colors cursor-pointer">
+            <CardContent className="p-8 flex flex-col items-center text-center space-y-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                <PlusCircle className="h-8 w-8 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Create a slido</h3>
+                <p className="text-sm text-foreground/70">Run polls and Q&A in your browser.</p>
+              </div>
+              <Button
+                className="w-full bg-primary hover:bg-primary/90"
+                onClick={() => {
+                  // Open create dialog
+                  const element = document.querySelector('[data-create-dialog-trigger]') as HTMLElement
+                  element?.click()
+                }}
+              >
+                Start now
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Integrations Card */}
+          <Card className="border-2 border-dashed hover:border-primary/50 transition-colors">
+            <CardContent className="p-8 flex flex-col items-center text-center space-y-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                <Play className="h-8 w-8 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Set up slido in your tools</h3>
+                <p className="text-sm text-foreground/70">Get started in integrations.</p>
+              </div>
+              <Button variant="outline" className="w-full">
+                Explore integrations
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        <CreateEventDialog
+          onEventCreated={(event) => {
+            setEvents([event, ...events])
+          }}
+        />
+
+        <div className="text-center">
+          <Link href="#how-it-works">
+            <Button variant="outline">See how Slido works</Button>
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="px-6 py-6 space-y-6">
-      <header className="flex items-center">
-        <h1 className="text-2xl font-bold">Bảng điều khiển Puzzlee</h1>
-        <nav className="ml-auto flex items-center gap-2">
-          <Link href="/" className="text-sm text-muted-foreground hover:underline">
-            Trang chủ
-          </Link>
-          <Separator orientation="vertical" className="h-4" />
-          <Link href="/events/new" className="text-sm text-muted-foreground hover:underline">
-            Tạo sự kiện
-          </Link>
-          <Separator orientation="vertical" className="h-4" />
-          <LogoutButton />
-        </nav>
-      </header>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold">My slidos</h1>
+        <p className="text-foreground/70 mt-2">Manage your interactive meetings</p>
+      </div>
 
-      <main className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold">{events.filter((e) => e.status === "active").length}</div>
-            <p className="text-sm text-muted-foreground">Sự kiện đang hoạt động</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold">{events.length}</div>
-            <p className="text-sm text-muted-foreground">Tổng sự kiện</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold">{events.reduce((sum, e) => sum + (e.answer_count || 0), 0)}</div>
-            <p className="text-sm text-muted-foreground">Câu hỏi được trả lời</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold">{events.reduce((sum, e) => sum + (e.participant_count || 0), 0)}</div>
-            <p className="text-sm text-muted-foreground">Người tham gia</p>
-          </CardContent>
-        </Card>
-
-        <div className="lg:col-span-3 space-y-6">
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Sự kiện của bạn</h2>
-              <CreateEventDialog
-                onEventCreated={(event) => {
-                  setEvents([event, ...events])
-                }}
-              />
-            </div>
-            <Separator className="my-4" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {loading ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                </div>
-              ) : events.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground mb-4">Chưa có sự kiện nào</p>
-                  <CreateEventDialog
-                    onEventCreated={(event) => {
-                      setEvents([event, ...events])
-                    }}
-                  />
-                </div>
-              ) : (
-                events.map((event) => <EventCard key={event.id} event={event} />)
-              )}
-            </div>
-          </Card>
-
-          <Card className="p-4">
-            <h2 className="text-lg font-semibold">Hoạt động gần đây</h2>
-            <Separator className="my-4" />
-            <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">Chức năng này sẽ sớm ra mắt!</p>
-            </div>
-          </Card>
-        </div>
-
-        <aside className="space-y-6">
-          <Card className="p-4 space-y-4">
-            <h2 className="text-lg font-semibold">Tài khoản</h2>
-            <div className="space-y-2 text-sm">
-              {user ? (
-                <>
-                  <div className="font-medium">{user.name}</div>
-                  <div className="text-muted-foreground">{user.email}</div>
-                </>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground mb-4">Chưa đăng nhập</p>
-                </div>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Link href="/events/new" className="w-full">
-                <Button variant="outline" className="w-full bg-transparent">
-                  Tạo nhanh
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {events.map((event) => (
+          <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <h3 className="font-semibold line-clamp-2">{event.title || "Untitled Slido"}</h3>
+                <p className="text-sm text-foreground/60">{event.participant_count || 0} participants</p>
+                <Button size="sm" className="w-full">
+                  Open
                 </Button>
-              </Link>
-              <LogoutButton />
-            </div>
+              </div>
+            </CardContent>
           </Card>
-
-          <Card className="p-4 space-y-3">
-            <h2 className="text-lg font-semibold">Lối tắt</h2>
-            <div className="flex flex-col gap-2">
-              <Link href="/events/new">
-                <Button variant="ghost" className="justify-start w-full">
-                  Tạo sự kiện
-                </Button>
-              </Link>
-              <Link href="/dashboard">
-                <Button variant="ghost" className="justify-start w-full">
-                  Bảng điều khiển
-                </Button>
-              </Link>
-              <Link href="/">
-                <Button variant="ghost" className="justify-start w-full">
-                  Trang giới thiệu
-                </Button>
-              </Link>
-            </div>
-          </Card>
-        </aside>
-      </main>
-
-      <footer className="text-xs text-muted-foreground">
-        <Separator className="my-6" />
-        <div className="flex items-center justify-between">
-          <span>© {new Date().getFullYear()} Puzzlee</span>
-          <span>Xây dựng trải nghiệm sự kiện của bạn</span>
-        </div>
-      </footer>
+        ))}
+      </div>
     </div>
   )
 }
