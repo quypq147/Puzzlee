@@ -46,7 +46,7 @@ export default function ProfilePage() {
         const res = await fetch("/api/auth/user");
 
         if (res.status === 401) {
-          router.push("/login?redirect=/dashboard/profile");
+          router.push("/login?redirect=/admin");
           return;
         }
 

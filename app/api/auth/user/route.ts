@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// Lấy thông tin user hiện tại + profile trong bảng `users`
+// Lấy thông tin user hiện tại + profile trong bảng `profiles`
 export async function GET() {
   const supabase = createClient();
 
@@ -13,7 +13,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { data: profile } = await supabase
-    .from("users")
+    .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
@@ -72,7 +72,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const { data: profile, error } = await supabase
-    .from("users")
+    .from("profiles")
     .upsert(updates, { onConflict: "id" })
     .select("*")
     .single();

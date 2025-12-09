@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     .from("questions")
     .select(`
       *,
-      user:users(id, display_name, avatar_url),
+      user:profiles(id, display_name, avatar_url),
       answers(count)
     `)
     .eq("event_id", event_id)

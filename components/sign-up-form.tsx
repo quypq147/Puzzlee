@@ -1,41 +1,70 @@
-'use client'
+"use client";
 
-import { cn } from '@/lib/utils'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
+import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [repeatPassword, setRepeatPassword] = useState('')
-  const [fullName, setFullName] = useState('')
-  const [avatarUrl, setAvatarUrl] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+export function SignUpForm({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div">) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const supabase = createClient()
-    setIsLoading(true)
-    setError(null)
+    e.preventDefault();
+    const supabase = createClient();
+    setIsLoading(true);
+    setError(null);
 
     if (password !== repeatPassword) {
-      setError('Mật khẩu không khớp')
-      setIsLoading(false)
-      return
+      setError("Mật khẩu không khớp");
+      setIsLoading(false);
+      return;
+    }
+
+    if (username && !/^[a-zA-Z0-9_\.\-]{3,32}$/.test(username)) {
+      setError("Username phải 3-32 ký tự, chỉ chữ/số/._-");
+      setIsLoading(false);
+      return;
+    }
+
+    // Check username uniqueness in profiles
+    if (username) {
+      const { data: existing, error: usernameError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("username", username)
+        .maybeSingle();
+      if (usernameError) {
+        setError("Không thể kiểm tra username, thử lại sau");
+        setIsLoading(false);
+        return;
+      }
+      if (existing) {
+        setError("Username đã tồn tại, vui lòng chọn tên khác");
+        setIsLoading(false);
+        return;
+      }
     }
 
     try {
@@ -46,22 +75,23 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
           emailRedirectTo: `${window.location.origin}/protected`,
           data: {
             full_name: fullName || null,
+            username: username || null,
             avatar_url: avatarUrl || null,
-            role: 'user',
+            role: "user",
           },
         },
-      })
-      if (error) throw error
-      router.push('/sign-up-success')
+      });
+      if (error) throw error;
+      router.push("/sign-up-success");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Đã xảy ra lỗi')
+      setError(error instanceof Error ? error.message : "Đã xảy ra lỗi");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Đăng ký</CardTitle>
@@ -81,6 +111,16 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 />
               </div>
               <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="nguyenvana"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
@@ -89,16 +129,6 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="avatar-url">Avatar URL (tuỳ chọn)</Label>
-                <Input
-                  id="avatar-url"
-                  type="url"
-                  placeholder="https://..."
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
                 />
               </div>
               <div className="grid gap-2">
@@ -127,11 +157,11 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Đang tạo tài khoản...' : 'Đăng ký'}
+                {isLoading ? "Đang tạo tài khoản..." : "Đăng ký"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Bạn đã có tài khoản?{' '}
+              Bạn đã có tài khoản?{" "}
               <Link href="/login" className="underline underline-offset-4">
                 Đăng nhập
               </Link>
@@ -140,5 +170,5 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

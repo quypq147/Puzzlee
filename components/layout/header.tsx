@@ -65,7 +65,7 @@ export function Header() {
           {loading ? null : user ? (
             <>
               <Link
-                href="/(dashboard)/dashboard"
+                href="/dashboard"
                 className="text-sm text-muted-foreground hover:text-foreground"
               >
                 Dashboard
