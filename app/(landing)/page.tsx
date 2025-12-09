@@ -9,7 +9,7 @@ import { MessageSquare, Users, Zap, BarChart3, ArrowRight } from "lucide-react";
 
 function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-primary/5 via-background to-background">
+    <div className="flex min-h-screen flex-col bg-linear-to-b from-primary/5 via-background to-background">
       <Header />
 
       <main className="flex-1">

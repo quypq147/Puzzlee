@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Plus } from "lucide-react";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function AdminDialogPage() {
   const [openInfo, setOpenInfo] = React.useState(false);
@@ -15,51 +17,92 @@ export default function AdminDialogPage() {
   const [name, setName] = React.useState("");
   const [start, setStart] = React.useState("");
   const [end, setEnd] = React.useState("");
+  const [events, setEvents] = React.useState<Array<{ id: string; title: string; description: string | null; created_at: string | null }>>([]);
+  const { user } = useAuth();
+
+  React.useEffect(() => {
+    const supabase = createClient();
+    const load = async () => {
+      if (!user?.id) return;
+      const { data } = await supabase
+        .from("events")
+        .select("id, title, description, created_at")
+        .eq("created_by", user.id)
+        .order("created_at", { ascending: false });
+      setEvents(data ?? []);
+    };
+    load();
+  }, [user?.id]);
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-4 py-10">
-      <Card className="w-full max-w-3xl border-slate-200 shadow-sm">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-xl md:text-2xl font-bold text-slate-800">Admin</h1>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={() => setOpenInfo(true)}>About</Button>
-              <Button className="bg-green-600 hover:bg-green-700" onClick={() => setOpenCreate(true)}>
-                <Plus className="mr-2 h-4 w-4" /> Create Slido
-              </Button>
-            </div>
-          </div>
-          <p className="text-sm text-slate-600">Manage your slidos, team, and preferences in a focused dialog-style panel.</p>
-
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="p-4">
-              <h3 className="font-semibold text-slate-800 mb-2">Quick Actions</h3>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" onClick={() => setOpenCreate(true)}>New Event</Button>
-                <Button variant="outline">Invite Team</Button>
-                <Button variant="outline">Open Tutorials</Button>
-              </div>
-            </Card>
-            <Card className="p-4">
-              <h3 className="font-semibold text-slate-800 mb-2">Support</h3>
-              <p className="text-sm text-slate-600">Need help? Visit the Help Center or contact support.</p>
-              <div className="mt-3">
-                <Button variant="outline">Help Center</Button>
-              </div>
-            </Card>
-          </div>
+    <div className="min-h-[70vh] px-4 py-10">
+      {/* Page header on canvas */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold text-zinc-900">Admin</h1>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setOpenInfo(true)}>About</Button>
         </div>
-      </Card>
+      </div>
+
+      {/* Two big cards grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Card A: Create & Action */}
+        <Card className="p-8">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-zinc-900">Create New Event</h2>
+              <p className="mt-2 text-sm text-zinc-500">Start a new interactive session for Q&A and polls. Share a code or link to let people join instantly.</p>
+            </div>
+            <Plus className="h-6 w-6 text-zinc-400" />
+          </div>
+          <div className="mt-6">
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setOpenCreate(true)}>
+              <Plus className="mr-2 h-4 w-4" /> Create Event
+            </Button>
+          </div>
+        </Card>
+
+        {/* Card B: Event List */}
+        <Card className="p-8">
+          <h2 className="text-xl font-semibold text-zinc-900">Your Events</h2>
+          {events.length === 0 ? (
+            <>
+              <p className="mt-2 text-sm text-zinc-500">You don’t have any events yet. Create one to get started.</p>
+              <div className="mt-6">
+                <Button variant="outline" onClick={() => setOpenCreate(true)}>
+                  <Plus className="mr-2 h-4 w-4" /> Create your first event
+                </Button>
+              </div>
+            </>
+          ) : (
+            <ul className="mt-4 space-y-3">
+              {events.map((ev) => (
+                <li key={ev.id} className="rounded-md border p-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-zinc-900">{ev.title}</p>
+                      {ev.description ? (
+                        <p className="text-sm text-zinc-500 mt-1">{ev.description}</p>
+                      ) : null}
+                    </div>
+                    <Button variant="ghost" className="text-primary hover:bg-primary/10">Open</Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
 
       {/* Info dialog */}
       <Dialog open={openInfo} onOpenChange={setOpenInfo}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Admin Panel</DialogTitle>
-            <DialogDescription>Dialog-like design for managing your organization.</DialogDescription>
+            <DialogTitle>Bảng điều khiển quản trị</DialogTitle>
+            <DialogDescription>Thiết kế dạng hộp thoại để quản lý tổ chức của bạn.</DialogDescription>
           </DialogHeader>
-          <div className="text-sm text-slate-700">
-            Use the sidebar to navigate core areas. This page surfaces key actions in a centered panel for quick access.
+          <div className="text-sm text-zinc-600">
+            Sử dụng thanh bên để điều hướng các khu vực chính. Trang này hiển thị các hành động chính trong một bảng điều khiển ở giữa để truy cập nhanh.
           </div>
         </DialogContent>
       </Dialog>
@@ -69,31 +112,31 @@ export default function AdminDialogPage() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Tạo event</DialogTitle>
-            <DialogDescription>Set basic details for your slido event.</DialogDescription>
+            <DialogDescription>Đặt các thông tin cơ bản cho sự kiện slido của bạn.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-slate-600">Start date</label>
+                <label className="text-xs font-medium text-zinc-600">Ngày bắt đầu</label>
                 <Input type="date" value={start} onChange={(e) => setStart(e.target.value)} />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-600">End date</label>
+                <label className="text-xs font-medium text-zinc-600">Ngày kết thúc</label>
                 <Input type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-slate-600">Slido name</label>
-              <Input placeholder="Enter a name" value={name} onChange={(e) => setName(e.target.value)} />
+              <label className="text-xs font-medium text-zinc-600">Tên Slido</label>
+              <Input placeholder="Nhập tên" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
-            <div className="text-xs text-slate-600 flex items-center gap-2 border rounded-md px-3 py-2">
+            <div className="text-xs text-zinc-600 flex items-center gap-2 border rounded-md px-3 py-2">
               <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border">i</span>
-              Anyone with the code or link can participate
+              Bất kỳ ai có mã hoặc liên kết đều có thể tham gia sự kiện này.
             </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpenCreate(false)}>Cancel</Button>
-            <Button className="bg-green-600 hover:bg-green-700" onClick={() => setOpenCreate(false)}>Create slido</Button>
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setOpenCreate(false)}>Create event</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

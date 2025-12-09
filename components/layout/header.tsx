@@ -42,6 +42,11 @@ export function Header() {
     user?.email?.charAt(0)?.toUpperCase() ||
     "?";
 
+  // Avoid showing wrong auth state during initial load
+  if (loading) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center px-4">
@@ -62,7 +67,7 @@ export function Header() {
 
         {/* Actions */}
         <div className="ml-auto flex items-center gap-3">
-          {loading ? null : user ? (
+          {user ? (
             <>
               <Link
                 href="/dashboard"
@@ -70,11 +75,13 @@ export function Header() {
               >
                 Dashboard
               </Link>
-
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
                   {profile?.avatar_url ? (
-                    <AvatarImage src={profile.avatar_url} alt={profile.full_name ?? ""} />
+                    <AvatarImage
+                      src={profile.avatar_url}
+                      alt={profile.full_name ?? ""}
+                    />
                   ) : null}
                   <AvatarFallback>{firstLetter}</AvatarFallback>
                 </Avatar>
@@ -88,13 +95,13 @@ export function Header() {
           ) : (
             <>
               <Link
-                href="/(auth)/login"
+                href="/login"
                 className="text-sm text-muted-foreground hover:text-foreground"
               >
                 Đăng nhập
               </Link>
               <Link
-                href="/(auth)/register"
+                href="/register"
                 className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
               >
                 Đăng ký
