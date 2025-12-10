@@ -61,7 +61,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <main className="flex-1 md:ml-64 min-h-screen overflow-y-auto">
           {/* Top header inside main */}
           <header className="sticky top-0 z-30 h-16 flex items-center px-4 md:px-6">
-            <h1 className="text-lg font-semibold">Tổng quan</h1>
             <div className="ml-auto">
               <UserNav />
             </div>
