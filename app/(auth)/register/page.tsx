@@ -14,8 +14,8 @@ import { SignUpForm } from "@/components/sign-up-form";
 
 export default function RegisterPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
-      <Card className="w-full max-w-md border-slate-800 bg-slate-900/90">
+    <main className="min-h-screen flex items-center justify-center ">
+      <Card className="w-full max-w-md border-slate-800 ">
         <CardHeader className="">
           <Link href="/">Quay lại trang chủ</Link>
         </CardHeader>

@@ -23,12 +23,38 @@ export function SignUpForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [secondName, setSecondName] = useState("");
   const [username, setUsername] = useState("");
+  const [isUsernameValid, setIsUsernameValid] = useState<boolean | null>(null);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const validateUsernameFormat = (u: string) => /^[a-zA-Z0-9_\.\-]{3,32}$/.test(u);
+
+  const checkUsernameAvailability = async (u: string) => {
+    if (!u) {
+      setIsUsernameAvailable(null);
+      return;
+    }
+    setIsCheckingUsername(true);
+    const supabase = createClient();
+    const { data: existing, error: usernameError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", u)
+      .maybeSingle();
+    if (usernameError) {
+      setIsUsernameAvailable(null);
+    } else {
+      setIsUsernameAvailable(!existing);
+    }
+    setIsCheckingUsername(false);
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +68,7 @@ export function SignUpForm({
       return;
     }
 
-    if (username && !/^[a-zA-Z0-9_\.\-]{3,32}$/.test(username)) {
+    if (username && !validateUsernameFormat(username)) {
       setError("Username phải 3-32 ký tự, chỉ chữ/số/._-");
       setIsLoading(false);
       return;
@@ -68,13 +94,14 @@ export function SignUpForm({
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/protected`,
           data: {
-            full_name: fullName || null,
+            first_name: firstName || null,
+            second_name: secondName || null,
             username: username || null,
             avatar_url: avatarUrl || null,
             role: "user",
@@ -82,6 +109,20 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
+      if (signUpData?.user) {
+        await (supabase as any)
+          .from("profiles")
+          .upsert(
+            {
+              id: signUpData.user.id,
+              first_name: firstName || null,
+              second_name: secondName || null,
+              username: username || null,
+              avatar_url: avatarUrl || null,
+            },
+            { onConflict: "id" }
+          );
+      }
       router.push("/sign-up-success");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Đã xảy ra lỗi");
@@ -100,15 +141,27 @@ export function SignUpForm({
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="full-name">Họ và tên</Label>
-                <Input
-                  id="full-name"
-                  type="text"
-                  placeholder="Nguyễn Văn A"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                />
+              <div className="grid gap-2 md:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label htmlFor="first-name">Tên đầu</Label>
+                  <Input
+                    id="first-name"
+                    type="text"
+                    placeholder="Nguyễn"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="second-name">Tên cuối</Label>
+                  <Input
+                    id="second-name"
+                    type="text"
+                    placeholder="Văn A"
+                    value={secondName}
+                    onChange={(e) => setSecondName(e.target.value)}
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="username">Username</Label>
@@ -117,8 +170,35 @@ export function SignUpForm({
                   type="text"
                   placeholder="nguyenvana"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setUsername(v);
+                    const valid = validateUsernameFormat(v);
+                    setIsUsernameValid(v ? valid : null);
+                    setIsUsernameAvailable(null);
+                  }}
+                  onBlur={() => {
+                    if (username && validateUsernameFormat(username)) {
+                      checkUsernameAvailability(username);
+                    }
+                  }}
                 />
+                {username && (
+                  <p className="text-xs">
+                    {isCheckingUsername && (
+                      <span className="text-zinc-500">Đang kiểm tra username…</span>
+                    )}
+                    {!isCheckingUsername && isUsernameValid === false && (
+                      <span className="text-red-500">Username không hợp lệ.</span>
+                    )}
+                    {!isCheckingUsername && isUsernameValid && isUsernameAvailable === false && (
+                      <span className="text-red-500">Username đã tồn tại.</span>
+                    )}
+                    {!isCheckingUsername && isUsernameValid && isUsernameAvailable && (
+                      <span className="text-green-600">Username hợp lệ và khả dụng.</span>
+                    )}
+                  </p>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -156,7 +236,18 @@ export function SignUpForm({
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={
+                  isLoading ||
+                  (username
+                    ? isUsernameValid === false ||
+                      isCheckingUsername ||
+                      isUsernameAvailable === false
+                    : false)
+                }
+              >
                 {isLoading ? "Đang tạo tài khoản..." : "Đăng ký"}
               </Button>
             </div>

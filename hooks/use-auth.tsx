@@ -13,8 +13,10 @@ import { createClient } from "@/lib/supabase/client";
 
 type Profile = {
   id: string;
-  full_name: string | null;
+  first_name: string | null;
+  second_name: string | null;
   avatar_url: string | null;
+  username?: string | null;
   role: string | null;
 };
 
@@ -57,11 +59,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const fetchProfile = async (userId: string) => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, first_name, second_name, avatar_url, username")
         .eq("id", userId)
         .single();
       if (!error && data) {
-        setProfile(data as Profile);
+        const row = data as {
+          id: string;
+          first_name: string | null;
+          second_name: string | null;
+          avatar_url: string | null;
+          username: string | null;
+        };
+        const p: Profile = {
+          id: row.id,
+          first_name: row.first_name ?? null,
+          second_name: row.second_name ?? null,
+          avatar_url: row.avatar_url ?? null,
+          username: row.username ?? null,
+          role: null,
+        };
+        setProfile(p);
       }
     };
 

@@ -8,8 +8,8 @@ import { LoginForm } from "@/components/login-form"
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
-      <Card className="w-full max-w-md border-slate-800 bg-slate-900/90">
+    <main className="min-h-screen flex items-center justify-center px-4">
+      <Card className="w-full max-w-md border-slate-800 ">
         <CardHeader className="space-y-2">
           <div className="flex items-center gap-2">
             <div className="h-9 w-9 rounded-xl bg-sky-500/10 flex items-center justify-center">
@@ -27,13 +27,13 @@ export default function LoginPage() {
           <LoginForm />
 
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <Link href="/(auth)/forgot-password" className="hover:text-slate-200 underline-offset-4 hover:underline">
+            <Link href="/forgot-password" className="hover:text-slate-200 underline-offset-4 hover:underline">
               Quên mật khẩu?
             </Link>
             <div className="flex items-center gap-1">
               <span>Chưa có tài khoản?</span>
               <Button asChild variant="link" size="sm" className="h-auto px-0 text-xs">
-                <Link href="/(auth)/register">Đăng ký ngay</Link>
+                <Link href="/register">Đăng ký ngay</Link>
               </Button>
             </div>
           </div>

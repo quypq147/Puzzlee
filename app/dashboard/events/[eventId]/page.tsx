@@ -23,7 +23,7 @@ export default function EventDetailPage() {
 
   const loadEvent = async () => {
     try {
-      const res = await fetch(`/api/events/${eventId}`)
+      const res = await fetch(`/api/events/by-code/${eventId}`)
       if (res.ok) {
         const data = await res.json()
         setEvent(data)

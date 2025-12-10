@@ -90,8 +90,8 @@ export function SettingsDialog({ onClose }: { onClose?: () => void }) {
       </div>
 
       <DialogFooter className="gap-2">
-        <Button variant="ghost" onClick={onClose}>Cancel</Button>
-        <Button onClick={onSave}>Save Changes</Button>
+        <Button variant="ghost" onClick={onClose}>Huỷ</Button>
+        <Button onClick={onSave}>Lưu thay đổi</Button>
       </DialogFooter>
     </DialogContent>
   );

@@ -69,25 +69,21 @@ export function Header() {
         <div className="ml-auto flex items-center gap-3">
           {user ? (
             <>
-              <Link
-                href="/dashboard"
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                Dashboard
-              </Link>
               <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
-                  {profile?.avatar_url ? (
-                    <AvatarImage
-                      src={profile.avatar_url}
-                      alt={profile.full_name ?? ""}
-                    />
-                  ) : null}
-                  <AvatarFallback>{firstLetter}</AvatarFallback>
-                </Avatar>
-                <span className="hidden text-sm md:inline-block">
-                  {profile?.full_name || user.email}
-                </span>
+                <Link
+                  href="/dashboard"
+                  className="text-sm text-muted-foreground hover:text-foreground"
+                >
+                  <Avatar className="h-8 w-8">
+                    {profile?.avatar_url ? (
+                      <AvatarImage
+                          src={profile.avatar_url}
+                          alt={`${profile?.first_name ?? ""} ${profile?.second_name ?? ""} avatar image`}
+                        />
+                    ) : null}
+                    <AvatarFallback>{firstLetter}</AvatarFallback>
+                  </Avatar>
+                </Link>
               </div>
 
               <LogoutButton />

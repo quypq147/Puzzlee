@@ -31,7 +31,7 @@ export default function EventSettingsPage() {
 
   const loadEvent = async () => {
     try {
-      const res = await fetch(`/api/events/${eventId}`)
+      const res = await fetch(`/api/events/by-code/${eventId}`)
       if (res.ok) {
         const data = await res.json()
         setEvent(data)
@@ -51,7 +51,7 @@ export default function EventSettingsPage() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      const res = await fetch(`/api/events/${eventId}`, {
+      const res = await fetch(`/api/events/${event.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -74,9 +74,7 @@ export default function EventSettingsPage() {
     }
 
     try {
-      const res = await fetch(`/api/events/${eventId}`, {
-        method: "DELETE",
-      })
+      const res = await fetch(`/api/events?id=${event.id}`, { method: "DELETE" })
 
       if (res.ok) {
         window.location.href = "/dashboard"

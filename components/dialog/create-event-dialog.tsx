@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -23,16 +24,34 @@ export function CreateEventDialog({
   const [loading, setLoading] = useState(false)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
+  const [startTime, setStartTime] = useState("") // datetime-local
+  const [endTime, setEndTime] = useState("") // datetime-local
+  const toast = useToast()
 
   const handleCreate = async () => {
     if (!title.trim()) return
 
     setLoading(true)
     try {
+      // Validate date range if provided
+      if (startTime && endTime) {
+        const s = new Date(startTime);
+        const e = new Date(endTime);
+        if (s > e) {
+          toast.error({ title: "Khoảng thời gian không hợp lệ", description: "Bắt đầu phải trước hoặc bằng kết thúc" })
+          setLoading(false)
+          return
+        }
+      }
+
+      const payload: any = { title: title.trim(), description: description || undefined }
+      if (startTime) payload.start_time = new Date(startTime).toISOString()
+      if (endTime) payload.end_time = new Date(endTime).toISOString()
+
       const res = await fetch("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description }),
+        body: JSON.stringify(payload),
       })
 
       const data = await res.json()
@@ -40,10 +59,15 @@ export function CreateEventDialog({
         onEventCreated(data)
         setTitle("")
         setDescription("")
+        setStartTime("")
+        setEndTime("")
         setOpen(false)
+        toast.success({ title: "Tạo sự kiện thành công" })
+      } else {
+        toast.error({ title: "Tạo sự kiện thất bại", description: data?.error ?? "Vui lòng thử lại" })
       }
     } catch (error) {
-      console.error("Failed to create event:", error)
+      toast.error({ title: "Tạo sự kiện thất bại", description: (error as Error)?.message })
     } finally {
       setLoading(false)
     }
@@ -64,6 +88,26 @@ export function CreateEventDialog({
         </DialogHeader>
 
         <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-medium">Thời gian bắt đầu</label>
+              <Input
+                type="datetime-local"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Thời gian kết thúc</label>
+              <Input
+                type="datetime-local"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+          </div>
           <div>
             <label className="text-sm font-medium">Tên sự kiện</label>
             <Input

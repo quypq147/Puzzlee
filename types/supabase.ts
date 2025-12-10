@@ -61,29 +61,35 @@ export type Database = {
       profiles: {
         Row: {
           id: string; // auth.users.id (FK)
+          first_name: string | null;
+          second_name: string | null;
           full_name: string | null;
           avatar_url: string | null;
           created_at: string; // timestamptz, not null default now()
+          updated_at: string | null; // timestamptz
           username: string; // not null
-          display_name: string | null;
           background_url: string | null;
         };
         Insert: {
           id: string;
+          first_name?: string | null;
+          second_name?: string | null;
           full_name?: string | null;
           avatar_url?: string | null;
           created_at?: string;
+          updated_at?: string | null;
           username: string;
-          display_name?: string | null;
           background_url?: string | null;
         };
         Update: {
           id?: string;
+          first_name?: string | null;
+          second_name?: string | null;
           full_name?: string | null;
           avatar_url?: string | null;
           created_at?: string;
+          updated_at?: string | null;
           username?: string;
-          display_name?: string | null;
           background_url?: string | null;
         };
         Relationships: [

@@ -31,8 +31,8 @@ export function UserNav() {
   const supabase = createClient();
   const [openProfile, setOpenProfile] = React.useState(false);
 
-  const displayName = profile?.full_name || user?.email || "User";
-  const email = user?.email || "admin@example.com";
+  const displayName = profile?.first_name || "Người dùng";
+  const email = user?.email;
   const avatarUrl = profile?.avatar_url || "/placeholder-user.jpg";
 
   const handleLogout = async () => {
@@ -63,17 +63,17 @@ export function UserNav() {
         <DropdownMenuGroup>
           <DropdownMenuItem className="cursor-pointer" onSelect={() => setOpenProfile(true)}>
             <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
+            <span>Hồ sơ</span>
           </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer">
             <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+            <span>Cài đặt</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600 cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>Đăng xuất</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
       <Dialog open={openProfile} onOpenChange={setOpenProfile}>
