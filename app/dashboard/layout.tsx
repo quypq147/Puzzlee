@@ -3,7 +3,14 @@
 import * as React from "react";
 import ".././globals.css";
 import Link from "next/link";
-import { LayoutDashboard, Users, BarChart3, Settings, Menu, HelpCircle } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  BarChart3,
+  Settings,
+  Menu,
+  HelpCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserNav } from "@/components/layout/user-nav";
 import {
@@ -18,15 +25,21 @@ import {
 type DashboardLayoutProps = { children: React.ReactNode };
 
 const navItems = [
-  { href: "/dashboard/events", label: "Sự kiện của tôi", icon: LayoutDashboard },
+  {
+    href: "/dashboard/events",
+    label: "Sự kiện của tôi",
+    icon: LayoutDashboard,
+  },
   { href: "/dashboard/team", label: "Team", icon: Users },
   { href: "/dashboard/analytics", label: "Thống kê", icon: BarChart3 },
-  { href: "/dashboard/settings", label: "Cài đặt", icon: Settings },
 ];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="min-h-screen w-full bg-slate-50 text-slate-900" suppressHydrationWarning>
+    <div
+      className="min-h-screen w-full bg-slate-50 text-slate-900"
+      suppressHydrationWarning
+    >
       {/* Mobile Top Bar */}
       <div className="flex md:hidden items-center justify-between px-4 py-3 border-b bg-white">
         <div className="font-semibold">Puzzlee</div>
@@ -35,14 +48,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex">
         {/* Sidebar - hidden on mobile */}
-        <aside className="hidden md:flex md:fixed md:inset-y-0 md:left-0 md:w-64 flex-col text-green-400  border-r border-slate-800">
+        <aside className="hidden md:flex md:fixed md:inset-y-0 md:left-0 md:w-64 flex-col text-green-400">
           <div className="h-14 flex items-center px-4">
-            <Link href="/dashboard" className="font-semibold tracking-tight">Puzzlee</Link>
+            <Link href="/dashboard" className="font-semibold tracking-tight">
+              Puzzlee
+            </Link>
           </div>
           <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
             {navItems.map((item) => (
               <Link key={item.href} href={item.href} className="block">
-                <Button variant="ghost" className="w-full justify-start text-black hover:text-green-400">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-black hover:text-green-400"
+                >
                   <item.icon className="mr-2 h-4 w-4" />
                   {item.label}
                 </Button>
@@ -50,7 +68,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             ))}
           </nav>
           <div className="p-4 border-t ">
-            <Button variant="ghost" className="w-full justify-start text-black hover:text-green-400">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-black hover:text-green-400"
+            >
               <HelpCircle className="mr-2 h-4 w-4" />
               Trợ giúp
             </Button>
@@ -65,9 +86,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <UserNav />
             </div>
           </header>
-          <div className="p-4 md:p-6 bg-muted/20">
-            {children}
-          </div>
+          <div className="p-4 md:p-6 bg-muted/20">{children}</div>
         </main>
       </div>
     </div>
@@ -91,7 +110,10 @@ function MobileNav() {
             {navItems.map((item) => (
               <DrawerClose asChild key={item.href}>
                 <Link href={item.href} className="block">
-                  <Button variant="ghost" className="w-full justify-start text-slate-100 hover:text-white hover:bg-slate-800">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-slate-100 hover:text-white hover:bg-slate-800"
+                  >
                     <item.icon className="mr-2 h-4 w-4" />
                     {item.label}
                   </Button>
@@ -100,7 +122,10 @@ function MobileNav() {
             ))}
           </nav>
           <div className="mt-4 border-t border-slate-800 pt-4">
-            <Button variant="ghost" className="w-full justify-start text-slate-100 hover:text-white hover:bg-slate-800">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-slate-100 hover:text-white hover:bg-slate-800"
+            >
               <HelpCircle className="mr-2 h-4 w-4" />
               Trợ Giúp
             </Button>
