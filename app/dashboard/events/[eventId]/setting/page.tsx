@@ -80,7 +80,7 @@ export default function EventSettingsPage() {
         window.location.href = "/dashboard"
       }
     } catch (error) {
-      console.error("Failed to delete event:", error)
+      console.error("Loi xoa su kien:", error)
     }
   }
 

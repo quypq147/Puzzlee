@@ -197,7 +197,7 @@ export async function PATCH(req: NextRequest) {
 
 // DELETE /api/events → delete event (creator only)
 export async function DELETE(req: NextRequest) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
